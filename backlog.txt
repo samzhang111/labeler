@@ -1,0 +1,24 @@
+GET /settings {
+        allow_multiple: False
+    }
+
+GET /label { labels: [
+    { value: 0, text: 'Spam' },
+    { value: 1, text: 'Not spam' }
+], columns: ['id', 'subject', 'text'] }
+POST /label/<itemid> {labels: 0}
+
+GET /unlabeled {
+    id: 'asdf-jadskf',
+    subject: 'prozac 4 free',
+    text: 'buy prozac here: http://blah.com'
+}
+
+GET /progress {
+    labeled: 10,
+    unlabeled: 100
+}
+
+POST /save {
+    to_csv
+    }
