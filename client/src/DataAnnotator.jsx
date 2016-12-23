@@ -1,11 +1,14 @@
 import React from 'react';
 import dispatcher from './dispatcher.js';
-import {observer} from 'mobx-react';
-import store from './store';
+import {inject, observer} from 'mobx-react';
+import LabelChoices from './LabelChoices.jsx';
 
-@observer
+@inject('store') @observer
 class DataAnnotator extends React.Component {
     componentDidMount() {
+        dispatcher.dispatch({
+            type: 'FETCH_LABELS'
+        });
         dispatcher.dispatch({
             type: 'FETCH_RECORD'
         });
@@ -14,7 +17,6 @@ class DataAnnotator extends React.Component {
     getDataRows(data) {
         let fields = [];
         for (let key of Object.keys(data)) {
-            console.log('entry: ', key, data[key]);
             fields.push(
             <div key={key} className="data-row">
                 <span className="key">{key}: </span>
@@ -26,8 +28,8 @@ class DataAnnotator extends React.Component {
     };
 
     render() {
-        console.log('store: ', store);
-        if (!store) {
+        const {store} = this.props;
+        if (!store || store.index == -1 || !store.labels) {
             return <div>Loading...</div>
         }
 
@@ -36,7 +38,13 @@ class DataAnnotator extends React.Component {
         </div>
 
         return (<div>
+            <h1>ID: {store.index}</h1>
             {dataTable}
+            <LabelChoices
+                labels={store.labels}
+                recordId={store.index}
+                submitLabel={store.submitLabel}
+            />
         </div>)
     }
 }

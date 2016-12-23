@@ -21540,7 +21540,7 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _class;
+	var _dec, _class;
 
 	var _react = __webpack_require__(2);
 
@@ -21552,9 +21552,9 @@
 
 	var _mobxReact = __webpack_require__(183);
 
-	var _store = __webpack_require__(185);
+	var _LabelChoices = __webpack_require__(387);
 
-	var _store2 = _interopRequireDefault(_store);
+	var _LabelChoices2 = _interopRequireDefault(_LabelChoices);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -21564,7 +21564,7 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var DataAnnotator = (0, _mobxReact.observer)(_class = function (_React$Component) {
+	var DataAnnotator = (_dec = (0, _mobxReact.inject)('store'), _dec(_class = (0, _mobxReact.observer)(_class = function (_React$Component) {
 	    _inherits(DataAnnotator, _React$Component);
 
 	    function DataAnnotator() {
@@ -21576,6 +21576,9 @@
 	    _createClass(DataAnnotator, [{
 	        key: 'componentDidMount',
 	        value: function componentDidMount() {
+	            _dispatcher2.default.dispatch({
+	                type: 'FETCH_LABELS'
+	            });
 	            _dispatcher2.default.dispatch({
 	                type: 'FETCH_RECORD'
 	            });
@@ -21592,7 +21595,6 @@
 	                for (var _iterator = Object.keys(data)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 	                    var key = _step.value;
 
-	                    console.log('entry: ', key, data[key]);
 	                    fields.push(_react2.default.createElement(
 	                        'div',
 	                        { key: key, className: 'data-row' },
@@ -21629,8 +21631,9 @@
 	    }, {
 	        key: 'render',
 	        value: function render() {
-	            console.log('store: ', _store2.default);
-	            if (!_store2.default) {
+	            var store = this.props.store;
+
+	            if (!store || store.index == -1 || !store.labels) {
 	                return _react2.default.createElement(
 	                    'div',
 	                    null,
@@ -21641,20 +21644,30 @@
 	            var dataTable = _react2.default.createElement(
 	                'div',
 	                { className: 'data-table' },
-	                this.getDataRows(_store2.default.record)
+	                this.getDataRows(store.record)
 	            );
 
 	            return _react2.default.createElement(
 	                'div',
 	                null,
-	                dataTable
+	                _react2.default.createElement(
+	                    'h1',
+	                    null,
+	                    'ID: ',
+	                    store.index
+	                ),
+	                dataTable,
+	                _react2.default.createElement(_LabelChoices2.default, {
+	                    labels: store.labels,
+	                    recordId: store.index,
+	                    submitLabel: store.submitLabel
+	                })
 	            );
 	        }
 	    }]);
 
 	    return DataAnnotator;
-	}(_react2.default.Component)) || _class;
-
+	}(_react2.default.Component)) || _class) || _class);
 	exports.default = DataAnnotator;
 
 /***/ },
@@ -25767,7 +25780,7 @@
 	    value: true
 	});
 
-	var _desc, _value, _class, _descriptor, _descriptor2;
+	var _desc, _value, _class, _descriptor, _descriptor2, _descriptor3;
 
 	var _dispatcher = __webpack_require__(180);
 
@@ -25822,12 +25835,38 @@
 	    throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
 	}
 
-	var RecordStore = (_class = function RecordStore() {
-	    _classCallCheck(this, RecordStore);
+	var Store = (_class = function Store() {
+	    _classCallCheck(this, Store);
 
 	    _initDefineProp(this, 'index', _descriptor, this);
 
 	    _initDefineProp(this, 'record', _descriptor2, this);
+
+	    _initDefineProp(this, 'labels', _descriptor3, this);
+
+	    this.submitLabel = function (recordId, labels) {
+	        _dispatcher2.default.dispatch({
+	            type: 'LABEL_IN_PROGRESS'
+	        });
+	        fetch('/data/' + recordId + '/label', {
+	            method: "POST",
+	            body: JSON.stringify({ labels: labels })
+	        }).then(function (response) {
+	            response.json().then(function (json) {
+	                if (json.index == recordId) {
+	                    _dispatcher2.default.dispatch({
+	                        type: 'LABEL_SUCCESS',
+	                        record: recordId
+	                    });
+	                } else {
+	                    _dispatcher2.default.dispatch({
+	                        type: 'LABEL_FAILURE',
+	                        message: json
+	                    });
+	                }
+	            });
+	        });
+	    };
 	}, (_descriptor = _applyDecoratedDescriptor(_class.prototype, 'index', [_mobx.observable], {
 	    enumerable: true,
 	    initializer: function initializer() {
@@ -25838,13 +25877,24 @@
 	    initializer: function initializer() {
 	        return {};
 	    }
+	}), _descriptor3 = _applyDecoratedDescriptor(_class.prototype, 'labels', [_mobx.observable], {
+	    enumerable: true,
+	    initializer: function initializer() {
+	        return [];
+	    }
 	})), _class);
 
 
-	var store = new RecordStore();
+	var store = new Store();
 
 	_dispatcher2.default.register(function (action) {
-	    if (action.type == 'FETCH_RECORD') {
+	    if (action.type == 'FETCH_LABELS') {
+	        fetch('/labels').then(function (response) {
+	            response.json().then(function (json) {
+	                store.labels = json.labels;
+	            });
+	        });
+	    } else if (action.type == 'FETCH_RECORD' || action.type == 'LABEL_SUCCESS') {
 	        fetch('/unlabeled').then(function (response) {
 	            response.json().then(function (json) {
 	                fetch('/data/' + json.index).then(function (dataResponse) {
@@ -25855,10 +25905,322 @@
 	                });
 	            });
 	        });
+	    } else if (action.type == 'LABEL_IN_PROGRESS') {
+	        store.index = -1;
+	        store.record = {};
 	    }
 	});
 
 	exports.default = store;
+
+/***/ },
+/* 186 */,
+/* 187 */,
+/* 188 */,
+/* 189 */,
+/* 190 */,
+/* 191 */,
+/* 192 */,
+/* 193 */,
+/* 194 */,
+/* 195 */,
+/* 196 */,
+/* 197 */,
+/* 198 */,
+/* 199 */,
+/* 200 */,
+/* 201 */,
+/* 202 */,
+/* 203 */,
+/* 204 */,
+/* 205 */,
+/* 206 */,
+/* 207 */,
+/* 208 */,
+/* 209 */,
+/* 210 */,
+/* 211 */,
+/* 212 */,
+/* 213 */,
+/* 214 */,
+/* 215 */,
+/* 216 */,
+/* 217 */,
+/* 218 */,
+/* 219 */,
+/* 220 */,
+/* 221 */,
+/* 222 */,
+/* 223 */,
+/* 224 */,
+/* 225 */,
+/* 226 */,
+/* 227 */,
+/* 228 */,
+/* 229 */,
+/* 230 */,
+/* 231 */,
+/* 232 */,
+/* 233 */,
+/* 234 */,
+/* 235 */,
+/* 236 */,
+/* 237 */,
+/* 238 */,
+/* 239 */,
+/* 240 */,
+/* 241 */,
+/* 242 */,
+/* 243 */,
+/* 244 */,
+/* 245 */,
+/* 246 */,
+/* 247 */,
+/* 248 */,
+/* 249 */,
+/* 250 */,
+/* 251 */,
+/* 252 */,
+/* 253 */,
+/* 254 */,
+/* 255 */,
+/* 256 */,
+/* 257 */,
+/* 258 */,
+/* 259 */,
+/* 260 */,
+/* 261 */,
+/* 262 */,
+/* 263 */,
+/* 264 */,
+/* 265 */,
+/* 266 */,
+/* 267 */,
+/* 268 */,
+/* 269 */,
+/* 270 */,
+/* 271 */,
+/* 272 */,
+/* 273 */,
+/* 274 */,
+/* 275 */,
+/* 276 */,
+/* 277 */,
+/* 278 */,
+/* 279 */,
+/* 280 */,
+/* 281 */,
+/* 282 */,
+/* 283 */,
+/* 284 */,
+/* 285 */,
+/* 286 */,
+/* 287 */,
+/* 288 */,
+/* 289 */,
+/* 290 */,
+/* 291 */,
+/* 292 */,
+/* 293 */,
+/* 294 */,
+/* 295 */,
+/* 296 */,
+/* 297 */,
+/* 298 */,
+/* 299 */,
+/* 300 */,
+/* 301 */,
+/* 302 */,
+/* 303 */,
+/* 304 */,
+/* 305 */,
+/* 306 */,
+/* 307 */,
+/* 308 */,
+/* 309 */,
+/* 310 */,
+/* 311 */,
+/* 312 */,
+/* 313 */,
+/* 314 */,
+/* 315 */,
+/* 316 */,
+/* 317 */,
+/* 318 */,
+/* 319 */,
+/* 320 */,
+/* 321 */,
+/* 322 */,
+/* 323 */,
+/* 324 */,
+/* 325 */,
+/* 326 */,
+/* 327 */,
+/* 328 */,
+/* 329 */,
+/* 330 */,
+/* 331 */,
+/* 332 */,
+/* 333 */,
+/* 334 */,
+/* 335 */,
+/* 336 */,
+/* 337 */,
+/* 338 */,
+/* 339 */,
+/* 340 */,
+/* 341 */,
+/* 342 */,
+/* 343 */,
+/* 344 */,
+/* 345 */,
+/* 346 */,
+/* 347 */,
+/* 348 */,
+/* 349 */,
+/* 350 */,
+/* 351 */,
+/* 352 */,
+/* 353 */,
+/* 354 */,
+/* 355 */,
+/* 356 */,
+/* 357 */,
+/* 358 */,
+/* 359 */,
+/* 360 */,
+/* 361 */,
+/* 362 */,
+/* 363 */,
+/* 364 */,
+/* 365 */,
+/* 366 */,
+/* 367 */,
+/* 368 */,
+/* 369 */,
+/* 370 */,
+/* 371 */,
+/* 372 */,
+/* 373 */,
+/* 374 */,
+/* 375 */,
+/* 376 */,
+/* 377 */,
+/* 378 */,
+/* 379 */,
+/* 380 */,
+/* 381 */,
+/* 382 */,
+/* 383 */,
+/* 384 */,
+/* 385 */,
+/* 386 */,
+/* 387 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var LabelChoices = function (_React$Component) {
+	    _inherits(LabelChoices, _React$Component);
+
+	    function LabelChoices() {
+	        var _ref;
+
+	        var _temp, _this, _ret;
+
+	        _classCallCheck(this, LabelChoices);
+
+	        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	            args[_key] = arguments[_key];
+	        }
+
+	        return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = LabelChoices.__proto__ || Object.getPrototypeOf(LabelChoices)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+	            selectedLabel: -1
+	        }, _this.clickLabel = function (e) {
+	            _this.setState({ selectedLabel: e.target.value });
+	        }, _this.submit = function (e) {
+	            var _this$props = _this.props,
+	                submitLabel = _this$props.submitLabel,
+	                recordId = _this$props.recordId;
+
+	            submitLabel(recordId, _this.state.selectedLabel);
+	        }, _temp), _possibleConstructorReturn(_this, _ret);
+	    }
+
+	    _createClass(LabelChoices, [{
+	        key: "render",
+	        value: function render() {
+	            var _props = this.props,
+	                labels = _props.labels,
+	                recordId = _props.recordId;
+
+
+	            var options = [];
+	            var _iteratorNormalCompletion = true;
+	            var _didIteratorError = false;
+	            var _iteratorError = undefined;
+
+	            try {
+	                for (var _iterator = labels[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	                    var label = _step.value;
+
+	                    options.push(_react2.default.createElement(
+	                        "div",
+	                        { className: "labels", key: label.value },
+	                        _react2.default.createElement(
+	                            "label",
+	                            null,
+	                            label.text
+	                        ),
+	                        _react2.default.createElement("input", { onClick: this.clickLabel, type: "radio", value: label.value, name: "labels" })
+	                    ));
+	                }
+	            } catch (err) {
+	                _didIteratorError = true;
+	                _iteratorError = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion && _iterator.return) {
+	                        _iterator.return();
+	                    }
+	                } finally {
+	                    if (_didIteratorError) {
+	                        throw _iteratorError;
+	                    }
+	                }
+	            }
+
+	            return _react2.default.createElement(
+	                "form",
+	                null,
+	                options,
+	                _react2.default.createElement("input", { onClick: this.submit, type: "button", value: "Label" })
+	            );
+	        }
+	    }]);
+
+	    return LabelChoices;
+	}(_react2.default.Component);
+
+	exports.default = LabelChoices;
 
 /***/ }
 /******/ ]);
