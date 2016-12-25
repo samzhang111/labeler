@@ -1,4 +1,5 @@
 import React from 'react';
+import "./LabelChoices.scss"
 
 class LabelChoices extends React.Component {
     state = {
@@ -21,15 +22,16 @@ class LabelChoices extends React.Component {
         for (let label of labels) {
             options.push(
             <div className="labels" key={label.value}>
-                <label>{label.text}</label>
-                <input onClick={this.clickLabel} type="radio" value={label.value} name="labels"/>
+                <label>
+                    <input onClick={this.clickLabel} type="radio" value={label.value} name="labels"/>
+                    {label.text}</label>
             </div>
             );
         }
 
-        return (<form>
+        return (<form className="label-choices-layout">
             {options}
-            <input onClick={this.submit} type="button" value="Label"/>
+            <input className="submit-button" onClick={this.submit} type="button" value="Label"/>
         </form>)
 
     }

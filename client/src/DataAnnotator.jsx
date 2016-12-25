@@ -2,6 +2,7 @@ import React from 'react';
 import dispatcher from './dispatcher.js';
 import {inject, observer} from 'mobx-react';
 import LabelChoices from './LabelChoices.jsx';
+import './DataAnnotator.scss';
 
 @inject('store') @observer
 class DataAnnotator extends React.Component {
@@ -37,7 +38,7 @@ class DataAnnotator extends React.Component {
             {this.getDataRows(store.record)}
         </div>
 
-        return (<div>
+        return (<div className="annotator-layout">
             <h1>ID: {store.index}</h1>
             {dataTable}
             <LabelChoices

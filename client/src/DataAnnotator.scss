@@ -1,0 +1,20 @@
+.annotator-layout {
+    .data-table {
+        margin-bottom: 10px;
+    }
+}
+
+
+.data-table {
+    display: table;
+    .data-row {
+        display: table-row;
+
+        .key {
+            display: table-cell;
+        }
+        .value {
+            display: table-cell;
+        }
+    }
+}
