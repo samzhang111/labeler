@@ -9,7 +9,6 @@ class Project(object):
     def __init__(self, labels, data):
         self.labels = [{'value': i, 'text': label} for i, label in enumerate(labels)]
         self.data = data
-        all_indexes = set(data.index)
 
     def assign_labels(self, datum_id, labels):
         label = Label(datum_id, labels)
@@ -37,10 +36,6 @@ class PandasData(object):
         jsons = self.dataframe.iloc[index].to_json()
         return json.loads(jsons)
 
-    @property
-    def index(self):
-        return [int(x) for x in self.dataframe.index]
-
     def get_unlabeled(self, labeled_indexes):
         for ix in self.dataframe.index:
             if ix not in labeled_indexes:
@@ -63,13 +58,9 @@ class SqlalchemyData(object):
         self.columns = [c.name for c in self.table.columns]
 
     def __getitem__(self, index):
-        result = self.session.query(self.table).filter_by(**{self.index_column: index}).first()._asdict()
+        result = self.session.query(self.table).filter(getattr(self.table.c, self.index_column) == index).first()._asdict()
 
         return result
-
-    @property
-    def index(self):
-        return [getattr(row, self.index_column) for row in self.session.query(self.table)]
 
     def get_unlabeled(self, labeled_indexes):
         result = self.session.query(self.table).filter(~getattr(self.table.c, self.index_column).in_(labeled_indexes)).first()
