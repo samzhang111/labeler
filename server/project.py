@@ -10,19 +10,15 @@ class Project(object):
         self.labels = [{'value': i, 'text': label} for i, label in enumerate(labels)]
         self.data = data
         all_indexes = set(data.index)
-        labeled_indexes = set([x[0] for x in session.query(Label.id).all()])
-
-        self.unlabeled = all_indexes - labeled_indexes
 
     def assign_labels(self, datum_id, labels):
-        self.unlabeled.remove(datum_id)
         label = Label(datum_id, labels)
         session.add(label)
         session.commit()
 
     def get_unlabeled_datum_index(self):
-        ix = next(iter(self.unlabeled))
-        return ix
+        labeled_indexes = set([x[0] for x in session.query(Label.id).all()])
+        return self.data.get_unlabeled(labeled_indexes)
 
     def datum(self, ix):
         return self.data[ix]
@@ -44,6 +40,11 @@ class PandasData(object):
     @property
     def index(self):
         return [int(x) for x in self.dataframe.index]
+
+    def get_unlabeled(self, labeled_indexes):
+        for ix in self.dataframe.index:
+            if ix not in labeled_indexes:
+                return ix.item()
 
 
 from sqlalchemy import create_engine
@@ -70,8 +71,14 @@ class SqlalchemyData(object):
     def index(self):
         return [getattr(row, self.index_column) for row in self.session.query(self.table)]
 
+    def get_unlabeled(self, labeled_indexes):
+        result = self.session.query(self.table).filter(~getattr(self.table.c, self.index_column).in_(labeled_indexes)).first()
+        return getattr(result, self.index_column)
+
 
 #df = pd.read_csv('~/data/abalone.csv')
 #pandas_data = PandasData(df, df.columns)
+#project = Project(project_config.project_labels, pandas_data)
+
 sql_data = SqlalchemyData(project_config.sql_uri, project_config.sql_table, project_config.sql_index)
 project = Project(project_config.project_labels, sql_data)
