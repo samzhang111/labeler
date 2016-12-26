@@ -8,5 +8,5 @@ pandas==0.19.1
 python-dateutil==2.6.0
 pytz==2016.10
 six==1.10.0
+SQLAlchemy==1.1.4
 Werkzeug==0.11.11
-wheel==0.24.0
