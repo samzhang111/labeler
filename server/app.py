@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, render_template
-from project import project
+from server.project import project
 
 app = Flask(__name__)
 
@@ -17,7 +17,7 @@ def get_unlabeled():
 
 @app.route('/data/<int:index>')
 def get_datum(index):
-    return project.datum(index).to_json()
+    return jsonify(project.datum(index))
 
 @app.route('/data/<int:post_id>/label', methods=['POST'])
 def post_label(post_id):
