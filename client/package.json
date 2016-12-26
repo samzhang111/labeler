@@ -30,6 +30,7 @@
     "css-loader": "^0.26.1",
     "enzyme": "^2.6.0",
     "jest": "^18.0.0",
+    "jest-css-modules": "^1.1.0",
     "mobx-react-devtools": "^4.2.10",
     "node-sass": "^4.1.1",
     "react-addons-test-utils": "^15.4.1",
@@ -38,5 +39,10 @@
     "sass-loader": "^4.1.1",
     "style-loader": "^0.13.1",
     "webpack": "^1.14.0"
+  },
+  "jest": {
+    "moduleNameMapper": {
+          "\\.(scss)$": "<rootDir>/node_modules/jest-css-modules"
+        }
   }
 }

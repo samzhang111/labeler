@@ -72,7 +72,7 @@
 
 	var _DataAnnotator2 = _interopRequireDefault(_DataAnnotator);
 
-	var _store = __webpack_require__(190);
+	var _store = __webpack_require__(192);
 
 	var _store2 = _interopRequireDefault(_store);
 
@@ -21556,7 +21556,7 @@
 
 	var _LabelChoices2 = _interopRequireDefault(_LabelChoices);
 
-	__webpack_require__(186);
+	__webpack_require__(190);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -25788,9 +25788,11 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	__webpack_require__(191);
+	__webpack_require__(186);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -25813,15 +25815,20 @@
 	        }
 
 	        return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = LabelChoices.__proto__ || Object.getPrototypeOf(LabelChoices)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
-	            selectedLabel: -1
+	            selectedLabels: []
 	        }, _this.clickLabel = function (e) {
-	            _this.setState({ selectedLabel: e.target.value });
+	            if (e.target.checked) {
+	                _this.setState({ selectedLabels: [].concat(_toConsumableArray(_this.state.selectedLabels), [e.target.value]) });
+	            } else {
+	                var ix = _this.state.selectedLabels.indexOf(e.target.value);
+	                _this.state.selectedLabels.splice(ix, 1);
+	            }
 	        }, _this.submit = function (e) {
 	            var _this$props = _this.props,
 	                submitLabel = _this$props.submitLabel,
 	                recordId = _this$props.recordId;
 
-	            submitLabel(recordId, _this.state.selectedLabel);
+	            submitLabel(recordId, _this.state.selectedLabels);
 	        }, _temp), _possibleConstructorReturn(_this, _ret);
 	    }
 
@@ -25848,7 +25855,7 @@
 	                        _react2.default.createElement(
 	                            "label",
 	                            null,
-	                            _react2.default.createElement("input", { onClick: this.clickLabel, type: "radio", value: label.value, name: "labels" }),
+	                            _react2.default.createElement("input", { onChange: this.clickLabel, type: "checkbox", value: label.value }),
 	                            label.text
 	                        )
 	                    ));
@@ -25898,8 +25905,8 @@
 	if(false) {
 		// When the styles change, update the <style> tags
 		if(!content.locals) {
-			module.hot.accept("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./DataAnnotator.scss", function() {
-				var newContent = require("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./DataAnnotator.scss");
+			module.hot.accept("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./LabelChoices.scss", function() {
+				var newContent = require("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./LabelChoices.scss");
 				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 				update(newContent);
 			});
@@ -25917,7 +25924,7 @@
 
 
 	// module
-	exports.push([module.id, ".annotator-layout .data-table {\n  margin-bottom: 10px; }\n\n.data-table {\n  display: table; }\n  .data-table .data-row {\n    display: table-row; }\n    .data-table .data-row .key {\n      display: table-cell; }\n    .data-table .data-row .value {\n      display: table-cell; }\n", ""]);
+	exports.push([module.id, ".label-choices-layout .submit-button {\n  margin-top: 10px; }\n", ""]);
 
 	// exports
 
@@ -26234,6 +26241,46 @@
 /* 190 */
 /***/ function(module, exports, __webpack_require__) {
 
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(191);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(189)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./DataAnnotator.scss", function() {
+				var newContent = require("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./DataAnnotator.scss");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 191 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(188)();
+	// imports
+
+
+	// module
+	exports.push([module.id, ".annotator-layout .data-table {\n  margin-bottom: 10px; }\n\n.data-table {\n  display: table; }\n  .data-table .data-row {\n    display: table-row; }\n    .data-table .data-row .key {\n      display: table-cell; }\n    .data-table .data-row .value {\n      display: table-cell; }\n", ""]);
+
+	// exports
+
+
+/***/ },
+/* 192 */
+/***/ function(module, exports, __webpack_require__) {
+
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
@@ -26372,46 +26419,6 @@
 	});
 
 	exports.default = store;
-
-/***/ },
-/* 191 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-
-	// load the styles
-	var content = __webpack_require__(192);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(189)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./LabelChoices.scss", function() {
-				var newContent = require("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./LabelChoices.scss");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ },
-/* 192 */
-/***/ function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(188)();
-	// imports
-
-
-	// module
-	exports.push([module.id, ".label-choices-layout .submit-button {\n  margin-top: 10px; }\n", ""]);
-
-	// exports
-
 
 /***/ }
 /******/ ]);

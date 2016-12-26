@@ -3,16 +3,21 @@ import "./LabelChoices.scss"
 
 class LabelChoices extends React.Component {
     state = {
-        selectedLabel: -1
+        selectedLabels: []
     };
 
     clickLabel = (e) => {
-        this.setState({selectedLabel: e.target.value});
+        if (e.target.checked) {
+            this.setState({selectedLabels: [...this.state.selectedLabels, e.target.value]});
+        } else {
+            let ix = this.state.selectedLabels.indexOf(e.target.value);
+            this.state.selectedLabels.splice(ix, 1);
+        }
     }
 
     submit = (e) => {
         const {submitLabel, recordId} = this.props;
-        submitLabel(recordId, this.state.selectedLabel)
+        submitLabel(recordId, this.state.selectedLabels)
     }
 
     render() {
@@ -23,7 +28,7 @@ class LabelChoices extends React.Component {
             options.push(
             <div className="labels" key={label.value}>
                 <label>
-                    <input onClick={this.clickLabel} type="radio" value={label.value} name="labels"/>
+                    <input onChange={this.clickLabel} type="checkbox" value={label.value}/>
                     {label.text}</label>
             </div>
             );

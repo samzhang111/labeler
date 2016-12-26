@@ -1,14 +1,14 @@
 from server.db import Base
-from sqlalchemy import Column, Integer
+from sqlalchemy import Column, Integer, String
 
 class Label(Base):
     __tablename__ = 'labels'
     id = Column(Integer, primary_key=True)
-    label = Column(Integer)
+    labels = Column(String)
 
-    def __init__(self, id, label):
+    def __init__(self, id, labels):
         self.id = id
-        self.label = label
+        self.labels = ",".join(map(str, labels))
 
     def __repr__(self):
         return '<Label {}: {}>'.format(self.id, self.label)
