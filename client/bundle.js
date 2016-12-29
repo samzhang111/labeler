@@ -21609,7 +21609,11 @@
 	                        _react2.default.createElement(
 	                            'span',
 	                            { className: 'value' },
-	                            data[key]
+	                            _react2.default.createElement(
+	                                'pre',
+	                                null,
+	                                data[key]
+	                            )
 	                        )
 	                    ));
 	                }

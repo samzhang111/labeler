@@ -21,7 +21,7 @@ class DataAnnotator extends React.Component {
             fields.push(
             <div key={key} className="data-row">
                 <span className="key">{key}: </span>
-                <span className="value">{data[key]}</span>
+                <span className="value"><pre>{data[key]}</pre></span>
             </div>)
         }
 
