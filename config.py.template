@@ -1,0 +1,6 @@
+sql_uri = ''
+sql_table = ''
+sql_index = ''
+project_labels = ["Spam",
+                  "Not Spam",
+                  "Not Spam And Not Not Spam"]
