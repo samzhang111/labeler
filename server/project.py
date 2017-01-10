@@ -11,8 +11,10 @@ class Project(object):
         self.data = data
 
     def assign_labels(self, datum_id, labels):
-        label = Label(datum_id, labels)
-        session.add(label)
+        for label in labels:
+            label = Label(document_id=datum_id, label=int(label))
+            session.add(label)
+
         session.commit()
 
     def get_unlabeled_datum_index(self):
