@@ -13,3 +13,6 @@ class Label(Base):
 
     def __repr__(self):
         return '<Label {} / {}: {}>'.format(self.id, self.document_id, self.label)
+
+    def __eq__(self, other):
+        return self.document_id == other.document_id and self.label == other.label

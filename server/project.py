@@ -1,24 +1,27 @@
 import pandas as pd
-from server.db import session
 from server.models import Label
-from server import project_config
 import json
 
 
 class Project(object):
-    def __init__(self, labels, data):
+    def __init__(self, labels, data, session):
         self.labels = [{'value': i, 'text': label} for i, label in enumerate(labels)]
         self.data = data
+        self.session = session
 
     def assign_labels(self, datum_id, labels):
+        if not labels:
+            label = Label(document_id=datum_id, label=None)
+            self.session.add(label)
+
         for label in labels:
             label = Label(document_id=datum_id, label=int(label))
-            session.add(label)
+            self.session.add(label)
 
-        session.commit()
+        self.session.commit()
 
     def get_unlabeled_datum_index(self):
-        labeled_indexes = set([x[0] for x in session.query(Label.id).all()])
+        labeled_indexes = set([x[0] for x in self.session.query(Label.document_id).distinct().all()])
         return self.data.get_unlabeled(labeled_indexes)
 
     def datum(self, ix):
@@ -69,9 +72,3 @@ class SqlalchemyData(object):
         return getattr(result, self.index_column)
 
 
-#df = pd.read_csv('~/data/abalone.csv')
-#pandas_data = PandasData(df, df.columns)
-#project = Project(project_config.project_labels, pandas_data)
-
-sql_data = SqlalchemyData(project_config.sql_uri, project_config.sql_table, project_config.sql_index)
-project = Project(project_config.project_labels, sql_data)
