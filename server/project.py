@@ -1,15 +1,18 @@
 import pandas as pd
 from server.models import Label
+from server.app_redis import unlabeled
 import json
 
 
 class Project(object):
-    def __init__(self, labels, data, session):
+    def __init__(self, labels, data, session, redis):
         self.labels = [{'value': i, 'text': label} for i, label in enumerate(labels)]
         self.data = data
         self.session = session
+        self.redis = redis
 
     def assign_labels(self, datum_id, labels):
+        self.redis.srem(unlabeled, datum_id)
         if not labels:
             label = Label(document_id=datum_id, label=None)
             self.session.add(label)
@@ -21,7 +24,7 @@ class Project(object):
         self.session.commit()
 
     def get_unlabeled_datum_index(self):
-        return self.data.get_unlabeled(self.labeled_indexes)
+        return int(self.redis.srandmember(unlabeled))
 
     def datum(self, ix):
         return self.data[ix]
@@ -87,5 +90,4 @@ class SqlalchemyData(object):
     def get_unlabeled(self, labeled_indexes):
         result = self.session.query(self.table).filter(~getattr(self.table.c, self.index_column).in_(labeled_indexes)).first
         return getattr(result, self.index_column)
-
 

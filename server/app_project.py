@@ -1,11 +1,14 @@
 import config
 from server.db import session
+from server.app_redis import redis
 from server.project import SqlalchemyData, PandasData, Project
+import pandas as pd
 
-#import pandas as pd
-#df = pd.read_csv('~/data/movie-reviews.csv')
-#pandas_data = PandasData(df, df.columns)
-#project = Project(config.project_labels, pandas_data, session)
+if config.data_type == 'csv':
+    df = pd.read_csv('~/data/movie-reviews.csv')
+    data = PandasData(df, df.columns)
+elif config.data_type == 'sql':
+    data = SqlalchemyData(config.sql_uri, config.sql_table, config.sql_index)
 
-sql_data = SqlalchemyData(config.sql_uri, config.sql_table, config.sql_index)
-project = Project(config.project_labels, sql_data, session)
+project = Project(config.project_labels, data, session, redis)
+
