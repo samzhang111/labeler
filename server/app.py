@@ -51,12 +51,23 @@ def get_unlabeled():
 
 @app.route('/data/<int:index>')
 def get_datum(index):
-    return jsonify(project.datum(index))
+    datum = project.datum(index)
+
+    predictions = project.predict(datum)
+
+    import pprint
+    pprint.pprint(predictions)
+
+    return jsonify(datum)
+
 
 @app.route('/data/<int:post_id>/label', methods=['POST'])
 def post_label(post_id):
     data = request.get_json(force=True)
     project.assign_labels(post_id, data['labels'])
+
+    datum = project.datum(post_id)
+    project.train(datum, data['labels'])
 
     return jsonify({'index': post_id})
 

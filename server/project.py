@@ -4,10 +4,14 @@ import json
 
 
 class Project(object):
-    def __init__(self, labels, data, session):
+    def __init__(self, labels, data, session, text_column, predictors, vectorizer):
         self.labels = [{'value': i, 'text': label} for i, label in enumerate(labels)]
         self.data = data
         self.session = session
+
+        self.text_column = text_column
+        self.predictors = predictors
+        self.vectorizer = vectorizer
 
     def assign_labels(self, datum_id, labels):
         if not labels:
@@ -26,6 +30,25 @@ class Project(object):
 
     def datum(self, ix):
         return self.data[ix]
+
+    def predict(self, datum):
+        X = self.vectorizer.transform([datum[self.text_column]])
+        predictions = {}
+        for i, predictor in enumerate(self.predictors):
+            predictions[i] = predictor.predict_proba(X)
+
+        return predictions
+
+    def train(self, datum, labels):
+        print('Received labels: ', labels)
+        X = self.vectorizer.transform([datum[self.text_column]])
+        for i, predictor in enumerate(self.predictors):
+            if str(i) in labels:
+                print('Labeling {} as true'.format(self.labels[i]['text']))
+                predictor.partial_fit(X, [1], classes=[0, 1])
+            else:
+                print('Labeling {} as false'.format(self.labels[i]['text']))
+                predictor.partial_fit(X, [0], classes=[0, 1])
 
     @property
     def data_columns(self):
