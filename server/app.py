@@ -7,6 +7,8 @@ from functools import wraps
 from flask import request, Response
 import os
 
+from server.db import init_db
+init_db()
 
 def check_auth(username, password):
     """This function is called to check if a username /

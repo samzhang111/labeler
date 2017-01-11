@@ -21,8 +21,7 @@ class Project(object):
         self.session.commit()
 
     def get_unlabeled_datum_index(self):
-        labeled_indexes = set([x[0] for x in self.session.query(Label.document_id).distinct().all()])
-        return self.data.get_unlabeled(labeled_indexes)
+        return self.data.get_unlabeled(self.labeled_indexes)
 
     def datum(self, ix):
         return self.data[ix]
@@ -30,6 +29,13 @@ class Project(object):
     @property
     def data_columns(self):
         return list(self.data.columns)
+
+    @property
+    def labeled_indexes(self):
+        return set([x[0] for x in self.session.query(Label.document_id).distinct().all()])
+
+    def get_unlabeled_set(self, n):
+        return self.data.get_unlabeled_set(self.labeled_indexes, n)
 
 
 class PandasData(object):
@@ -46,6 +52,14 @@ class PandasData(object):
             if ix not in labeled_indexes:
                 return ix.item()
 
+    def get_unlabeled_set(self, labeled_indexes, n):
+        unlabeled = set()
+        for ix in self.dataframe.index:
+            if ix not in labeled_indexes:
+                unlabeled.add(ix.item())
+                if len(unlabeled) >= n:
+                    return unlabeled
+        return unlabeled
 
 from sqlalchemy import create_engine
 from sqlalchemy.schema import MetaData
@@ -67,8 +81,11 @@ class SqlalchemyData(object):
 
         return result
 
+    def get_unlabeled_set(self, labeled_indexes, n):
+        result = self.session.query(self.table).filter(~getattr(self.table.c, self.index_column).in_(labeled_indexes)).limit(n).all()
+
     def get_unlabeled(self, labeled_indexes):
-        result = self.session.query(self.table).filter(~getattr(self.table.c, self.index_column).in_(labeled_indexes)).first()
+        result = self.session.query(self.table).filter(~getattr(self.table.c, self.index_column).in_(labeled_indexes)).first
         return getattr(result, self.index_column)
 
 
