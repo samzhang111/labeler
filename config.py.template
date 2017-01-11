@@ -1,6 +1,10 @@
-sql_uri = ''
-sql_table = ''
-sql_index = ''
-project_labels = ["Spam",
-                  "Not Spam",
-                  "Not Spam And Not Not Spam"]
+project_labels = ["Positive",
+                  "Negative"]
+
+data_type = 'csv' #csv or sql
+csv_path = '~/data/movie-reviews.csv'
+
+# if data_type = 'sql'
+# sql_uri = ''
+# sql_table = ''
+# sql_index = ''
