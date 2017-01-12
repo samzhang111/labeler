@@ -41,10 +41,10 @@ def requires_auth(f):
 
 @app.route('/labels')
 def get_labels():
-    return jsonify({
-            'labels': project.labels,
-            'columns': project.data_columns
-            })
+    return(jsonify({
+        'labels': project.labels,
+        'columns': project.data_columns
+        }))
 
 @app.route('/unlabeled')
 def get_unlabeled():

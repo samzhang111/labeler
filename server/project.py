@@ -50,11 +50,6 @@ class PandasData(object):
         jsons = self.dataframe.iloc[index].to_json()
         return json.loads(jsons)
 
-    def get_unlabeled(self, labeled_indexes):
-        for ix in self.dataframe.index:
-            if ix not in labeled_indexes:
-                return ix.item()
-
     def get_unlabeled_set(self, labeled_indexes, n):
         unlabeled = set()
         for ix in self.dataframe.index:
@@ -85,9 +80,9 @@ class SqlalchemyData(object):
         return result
 
     def get_unlabeled_set(self, labeled_indexes, n):
+        unlabeled_set = set()
         result = self.session.query(self.table).filter(~getattr(self.table.c, self.index_column).in_(labeled_indexes)).limit(n).all()
-
-    def get_unlabeled(self, labeled_indexes):
-        result = self.session.query(self.table).filter(~getattr(self.table.c, self.index_column).in_(labeled_indexes)).first
-        return getattr(result, self.index_column)
+        for row in result:
+            unlabeled_set.add(getattr(row, self.index_column))
+        return unlabeled_set
 
