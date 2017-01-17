@@ -5,13 +5,13 @@ class Store {
     @observable index = null;
     @observable record = {};
     @observable labels = [];
-    submitLabel = (recordId, labels) => {
+    submitLabel = (recordId, userId, labels) => {
         dispatcher.dispatch({
             type: 'LABEL_IN_PROGRESS'
         });
         fetch(`/data/${recordId}/label`, {
             method: "POST",
-            body: JSON.stringify({labels})
+            body: JSON.stringify({labels, userId})
         }).then(response => {
             response.json().then(json => {
                 if (json.index == recordId) {

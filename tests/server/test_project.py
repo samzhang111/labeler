@@ -38,9 +38,9 @@ class TestProject(unittest.TestCase):
         fake_redis = FakeRedis()
         project = Project(labels=[], data=None, session=fake_session, redis=fake_redis)
 
-        project.assign_labels(1, [])
+        project.assign_labels(1, [], 'user', 'ip')
 
-        expect(fake_session.labels).to(equal([Label(document_id=1, label=None)]))
+        expect(fake_session.labels).to(equal([Label(document_id=1, label=None, labeler='user', ip='ip')]))
 
     def test_assigns_all_labels(self):
         fake_session = FakeSession()
@@ -48,11 +48,11 @@ class TestProject(unittest.TestCase):
         project = Project(labels=[], data=None, session=fake_session, redis=fake_redis)
 
         test_labels = [500, 900]
-        project.assign_labels(1, test_labels)
+        project.assign_labels(1, test_labels, 'user', 'ip')
 
         expect(fake_session.labels).to(equal([
-            Label(document_id=1, label=500),
-            Label(document_id=1, label=900),
+            Label(document_id=1, label=500, labeler='user', ip='ip'),
+            Label(document_id=1, label=900, labeler='user', ip='ip'),
         ]))
 
     def test_assigning_label_removes_index_from_redis(self):
@@ -63,7 +63,7 @@ class TestProject(unittest.TestCase):
         test_labels = [500, 900]
 
         expect(fake_redis.scard('unlabeled')).to(equal(1))
-        project.assign_labels(1, test_labels)
+        project.assign_labels(1, test_labels, 'user', 'ip')
         expect(fake_redis.scard('unlabeled')).to(equal(0))
 
 

@@ -58,7 +58,8 @@ def get_datum(index):
 @app.route('/data/<int:post_id>/label', methods=['POST'])
 def post_label(post_id):
     data = request.get_json(force=True)
-    project.assign_labels(post_id, data['labels'])
+    project.assign_labels(post_id, data['labels'], data['userId'],
+            request.remote_addr)
 
     return jsonify({'index': post_id})
 

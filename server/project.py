@@ -11,14 +11,15 @@ class Project(object):
         self.session = session
         self.redis = redis
 
-    def assign_labels(self, datum_id, labels):
+    def assign_labels(self, datum_id, labels, labeler, ip):
         self.redis.srem(unlabeled, datum_id)
         if not labels:
-            label = Label(document_id=datum_id, label=None)
+            label = Label(document_id=datum_id, label=None, labeler=labeler, ip=ip)
             self.session.add(label)
 
         for label in labels:
-            label = Label(document_id=datum_id, label=int(label))
+            label = Label(document_id=datum_id, label=int(label),
+                    labeler=labeler, ip=ip)
             self.session.add(label)
 
         self.session.commit()

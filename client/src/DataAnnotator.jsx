@@ -29,7 +29,7 @@ class DataAnnotator extends React.Component {
     };
 
     render() {
-        const {store} = this.props;
+        const {store, params} = this.props;
         if (!store || store.index == -1 || !store.labels) {
             return <div>Loading...</div>
         }
@@ -42,6 +42,7 @@ class DataAnnotator extends React.Component {
             <h1>ID: {store.index}</h1>
             {dataTable}
             <LabelChoices
+                userId={params.userId}
                 labels={store.labels}
                 recordId={store.index}
                 submitLabel={store.submitLabel}

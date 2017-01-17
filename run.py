@@ -12,5 +12,11 @@ def load_redis(count):
     load_unlabeled_into_redis(count)
     click.echo('Done')
 
+@cli.command()
+def run():
+    click.echo('Running:')
+    app.run()
+    click.echo('Done')
+
 if __name__ == '__main__':
     cli()

@@ -16,8 +16,8 @@ class LabelChoices extends React.Component {
     }
 
     submit = (e) => {
-        const {submitLabel, recordId} = this.props;
-        submitLabel(recordId, this.state.selectedLabels)
+        const {submitLabel, recordId, userId} = this.props;
+        submitLabel(recordId, userId, this.state.selectedLabels)
     }
 
     render() {
