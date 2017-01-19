@@ -1,12 +1,26 @@
 .annotator-layout {
-    .data-table {
-        margin-bottom: 10px;
+    display: table;
+
+    .annotator-row {
+        display: table-row;
+
+        .annotator-left {
+            display: table-cell;
+            width: 300px;
+            border-right: 1px solid #000;
+        }
+
+        .annotator-right {
+            display: table-cell;
+            padding-left: 10px;
+        }
     }
 }
 
-
 .data-table {
     display: table;
+    margin-bottom: 10px;
+
     .data-row {
         display: table-row;
 
@@ -27,3 +41,4 @@
         }
     }
 }
+

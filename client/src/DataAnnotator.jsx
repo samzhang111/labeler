@@ -58,16 +58,22 @@ class DataAnnotator extends React.Component {
         </div>
 
         return (<div className="annotator-layout">
-            <UserSummary userId={params.userId} completed={store.completed} />
-            <hr />
-            <h1>ID: {store.index}</h1>
-            {dataTable}
-            <LabelChoices
-                userId={params.userId}
-                labels={store.labels}
-                recordId={store.index}
-                submitLabel={store.submitLabel}
-            />
+            <div className="annotator-row">
+                <div className="annotator-left">
+                    <UserSummary userId={params.userId} completed={store.completed} />
+                    <p />
+                    <LabelChoices
+                        userId={params.userId}
+                        labels={store.labels}
+                        recordId={store.index}
+                        submitLabel={store.submitLabel}
+                    />
+                </div>
+                <div className="annotator-right">
+                    <h1>ID: {store.index}</h1>
+                    {dataTable}
+                </div>
+            </div>
         </div>)
     }
 }
