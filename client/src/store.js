@@ -5,6 +5,8 @@ class Store {
     @observable index = null;
     @observable record = {};
     @observable labels = [];
+    @observable completed = 0;
+
     submitLabel = (recordId, userId, labels) => {
         dispatcher.dispatch({
             type: 'LABEL_IN_PROGRESS'
@@ -41,8 +43,18 @@ dispatcher.register((action) => {
             });
         });
     }
-    else if (action.type == 'FETCH_RECORD' ||
+    if (action.type == 'FETCH_USER') {
+        fetch(`/user/${action.user}`).then((response) => {
+            response.json().then((json) => {
+                store.completed = json.completed;
+            });
+        });
+    }
+    if (action.type == 'FETCH_RECORD' ||
              action.type == 'LABEL_SUCCESS') {
+        store.index = null;
+        store.record = {};
+
         fetch('/unlabeled').then((response) => {
             response.json().then((json) => {
                 fetch(`/data/${json.index}`).then((dataResponse) => {
@@ -54,7 +66,10 @@ dispatcher.register((action) => {
             });
         });
     }
-    else if (action.type == 'LABEL_IN_PROGRESS') {
+    if (action.type == 'LABEL_SUCCESS') {
+        store.completed += 1;
+    }
+    if (action.type == 'LABEL_IN_PROGRESS') {
         store.index = -1;
         store.record = {};
     }

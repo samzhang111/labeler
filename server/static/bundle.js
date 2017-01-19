@@ -21572,13 +21572,49 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	var UserSummary = function UserSummary(_ref) {
+	    var userId = _ref.userId,
+	        completed = _ref.completed;
+	    return _react2.default.createElement(
+	        'div',
+	        { className: 'user-summary-layout' },
+	        _react2.default.createElement(
+	            'div',
+	            null,
+	            'You: ',
+	            userId
+	        ),
+	        _react2.default.createElement(
+	            'div',
+	            null,
+	            '# Completed: ',
+	            completed
+	        )
+	    );
+	};
+
 	var DataAnnotator = (_dec = (0, _mobxReact.inject)('store'), _dec(_class = (0, _mobxReact.observer)(_class = function (_React$Component) {
 	    _inherits(DataAnnotator, _React$Component);
 
 	    function DataAnnotator() {
+	        var _ref2;
+
+	        var _temp, _this, _ret;
+
 	        _classCallCheck(this, DataAnnotator);
 
-	        return _possibleConstructorReturn(this, (DataAnnotator.__proto__ || Object.getPrototypeOf(DataAnnotator)).apply(this, arguments));
+	        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	            args[_key] = arguments[_key];
+	        }
+
+	        return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref2 = DataAnnotator.__proto__ || Object.getPrototypeOf(DataAnnotator)).call.apply(_ref2, [this].concat(args))), _this), _this.componentWillReceiveProps = function (nextProps) {
+	            if (nextProps.params.userId != _this.props.params.userId) {
+	                _dispatcher2.default.dispatch({
+	                    type: 'FETCH_USER',
+	                    user: nextProps.params.userId
+	                });
+	            }
+	        }, _temp), _possibleConstructorReturn(_this, _ret);
 	    }
 
 	    _createClass(DataAnnotator, [{
@@ -21589,6 +21625,10 @@
 	            });
 	            _dispatcher2.default.dispatch({
 	                type: 'FETCH_RECORD'
+	            });
+	            _dispatcher2.default.dispatch({
+	                type: 'FETCH_USER',
+	                user: this.props.params.userId
 	            });
 	        }
 	    }, {
@@ -21664,6 +21704,8 @@
 	            return _react2.default.createElement(
 	                'div',
 	                { className: 'annotator-layout' },
+	                _react2.default.createElement(UserSummary, { userId: params.userId, completed: store.completed }),
+	                _react2.default.createElement('hr', null),
 	                _react2.default.createElement(
 	                    'h1',
 	                    null,
@@ -26301,7 +26343,7 @@
 	    value: true
 	});
 
-	var _desc, _value, _class, _descriptor, _descriptor2, _descriptor3;
+	var _desc, _value, _class, _descriptor, _descriptor2, _descriptor3, _descriptor4;
 
 	var _dispatcher = __webpack_require__(180);
 
@@ -26365,6 +26407,8 @@
 
 	    _initDefineProp(this, 'labels', _descriptor3, this);
 
+	    _initDefineProp(this, 'completed', _descriptor4, this);
+
 	    this.submitLabel = function (recordId, userId, labels) {
 	        _dispatcher2.default.dispatch({
 	            type: 'LABEL_IN_PROGRESS'
@@ -26403,6 +26447,11 @@
 	    initializer: function initializer() {
 	        return [];
 	    }
+	}), _descriptor4 = _applyDecoratedDescriptor(_class.prototype, 'completed', [_mobx.observable], {
+	    enumerable: true,
+	    initializer: function initializer() {
+	        return 0;
+	    }
 	})), _class);
 
 
@@ -26415,7 +26464,18 @@
 	                store.labels = json.labels;
 	            });
 	        });
-	    } else if (action.type == 'FETCH_RECORD' || action.type == 'LABEL_SUCCESS') {
+	    }
+	    if (action.type == 'FETCH_USER') {
+	        fetch('/user/' + action.user).then(function (response) {
+	            response.json().then(function (json) {
+	                store.completed = json.completed;
+	            });
+	        });
+	    }
+	    if (action.type == 'FETCH_RECORD' || action.type == 'LABEL_SUCCESS') {
+	        store.index = null;
+	        store.record = {};
+
 	        fetch('/unlabeled').then(function (response) {
 	            response.json().then(function (json) {
 	                fetch('/data/' + json.index).then(function (dataResponse) {
@@ -26426,7 +26486,11 @@
 	                });
 	            });
 	        });
-	    } else if (action.type == 'LABEL_IN_PROGRESS') {
+	    }
+	    if (action.type == 'LABEL_SUCCESS') {
+	        store.completed += 1;
+	    }
+	    if (action.type == 'LABEL_IN_PROGRESS') {
 	        store.index = -1;
 	        store.record = {};
 	    }

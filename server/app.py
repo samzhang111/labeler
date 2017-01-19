@@ -63,6 +63,12 @@ def post_label(post_id):
 
     return jsonify({'index': post_id})
 
+@app.route('/user/<string:user>')
+def get_user(user):
+    completed = project.get_completed(user)
+
+    return jsonify({'completed': completed})
+
 @app.route('/')
 @requires_auth
 def index():

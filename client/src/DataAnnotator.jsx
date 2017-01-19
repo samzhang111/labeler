@@ -4,6 +4,12 @@ import {inject, observer} from 'mobx-react';
 import LabelChoices from './LabelChoices.jsx';
 import './DataAnnotator.scss';
 
+const UserSummary = ({userId, completed}) => (
+        <div className="user-summary-layout">
+            <div>You: {userId}</div>
+            <div># Completed: {completed}</div>
+        </div>);
+
 @inject('store') @observer
 class DataAnnotator extends React.Component {
     componentDidMount() {
@@ -13,7 +19,20 @@ class DataAnnotator extends React.Component {
         dispatcher.dispatch({
             type: 'FETCH_RECORD'
         });
+        dispatcher.dispatch({
+            type: 'FETCH_USER',
+            user: this.props.params.userId
+        });
     };
+
+    componentWillReceiveProps = (nextProps) => {
+        if (nextProps.params.userId != this.props.params.userId) {
+            dispatcher.dispatch({
+                type: 'FETCH_USER',
+                user: nextProps.params.userId
+            });
+        }
+    }
 
     getDataRows(data) {
         let fields = [];
@@ -39,6 +58,8 @@ class DataAnnotator extends React.Component {
         </div>
 
         return (<div className="annotator-layout">
+            <UserSummary userId={params.userId} completed={store.completed} />
+            <hr />
             <h1>ID: {store.index}</h1>
             {dataTable}
             <LabelChoices

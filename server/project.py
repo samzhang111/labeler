@@ -41,6 +41,10 @@ class Project(object):
     def get_unlabeled_set(self, n):
         return self.data.get_unlabeled_set(self.labeled_indexes, n)
 
+    def get_completed(self, user):
+        return self.session.query(Label.labeler).group_by(Label.document_id)\
+                .having(Label.labeler == user).count()
+
 
 class PandasData(object):
     def __init__(self, dataframe, columns):
