@@ -26328,7 +26328,7 @@
 
 
 	// module
-	exports.push([module.id, ".annotator-layout .data-table {\n  margin-bottom: 10px; }\n\n.data-table {\n  display: table; }\n  .data-table .data-row {\n    display: table-row; }\n    .data-table .data-row .key {\n      display: table-cell; }\n    .data-table .data-row .value {\n      display: table-cell; }\n", ""]);
+	exports.push([module.id, ".annotator-layout .data-table {\n  margin-bottom: 10px; }\n\n.data-table {\n  display: table; }\n  .data-table .data-row {\n    display: table-row; }\n    .data-table .data-row .key {\n      display: table-cell; }\n    .data-table .data-row .value {\n      display: table-cell; }\n      .data-table .data-row .value pre {\n        /* via https://css-tricks.com/snippets/css/make-pre-text-wrap/ */\n        white-space: pre-wrap;\n        /* css-3 */\n        white-space: -moz-pre-wrap;\n        /* Mozilla, since 1999 */\n        white-space: -pre-wrap;\n        /* Opera 4-6 */\n        white-space: -o-pre-wrap;\n        /* Opera 7 */\n        word-wrap: break-word;\n        /* Internet Explorer 5.5+ */ }\n", ""]);
 
 	// exports
 
