@@ -25,11 +25,18 @@ class DataAnnotator extends React.Component {
         });
     };
 
+    getUserId = (query) => {
+        return query.workerId || 'none';
+    }
+
     componentWillReceiveProps = (nextProps) => {
-        if (nextProps.params.userId != this.props.params.userId) {
+        const newUserId = this.getUserId(nextProps.location.query);
+        const oldUserId = this.getUserId(this.props.location.query);
+        console.log(newUserId, oldUserId);
+        if (newUserId != oldUserId) {
             dispatcher.dispatch({
                 type: 'FETCH_USER',
-                user: nextProps.params.userId
+                user: newUserId
             });
         }
     }
@@ -48,10 +55,12 @@ class DataAnnotator extends React.Component {
     };
 
     render() {
-        const {store, params} = this.props;
+        const {store, location} = this.props;
         if (!store || store.index == -1 || !store.labels) {
             return <div>Loading...</div>
         }
+
+        const userId = this.getUserId(location.query);
 
         let dataTable = <div className="data-table">
             {this.getDataRows(store.record)}
@@ -60,10 +69,10 @@ class DataAnnotator extends React.Component {
         return (<div className="annotator-layout">
             <div className="annotator-row">
                 <div className="annotator-left">
-                    <UserSummary userId={params.userId} completed={store.completed} />
+                    <UserSummary userId={userId} completed={store.completed} />
                     <p />
                     <LabelChoices
-                        userId={params.userId}
+                        userId={userId}
                         labels={store.labels}
                         recordId={store.index}
                         submitLabel={store.submitLabel}

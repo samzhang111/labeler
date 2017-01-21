@@ -109,7 +109,7 @@
 	                    _react2.default.createElement(
 	                        _reactRouter.Router,
 	                        { history: _reactRouter.hashHistory },
-	                        _react2.default.createElement(_reactRouter.Route, { path: '/label/:userId', component: _DataAnnotator2.default })
+	                        _react2.default.createElement(_reactRouter.Route, { path: '/label', component: _DataAnnotator2.default })
 	                    )
 	                )
 	            );
@@ -21607,11 +21607,16 @@
 	            args[_key] = arguments[_key];
 	        }
 
-	        return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref2 = DataAnnotator.__proto__ || Object.getPrototypeOf(DataAnnotator)).call.apply(_ref2, [this].concat(args))), _this), _this.componentWillReceiveProps = function (nextProps) {
-	            if (nextProps.params.userId != _this.props.params.userId) {
+	        return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref2 = DataAnnotator.__proto__ || Object.getPrototypeOf(DataAnnotator)).call.apply(_ref2, [this].concat(args))), _this), _this.getUserId = function (query) {
+	            return query.workerId || 'none';
+	        }, _this.componentWillReceiveProps = function (nextProps) {
+	            var newUserId = _this.getUserId(nextProps.location.query);
+	            var oldUserId = _this.getUserId(_this.props.location.query);
+	            console.log(newUserId, oldUserId);
+	            if (newUserId != oldUserId) {
 	                _dispatcher2.default.dispatch({
 	                    type: 'FETCH_USER',
-	                    user: nextProps.params.userId
+	                    user: newUserId
 	                });
 	            }
 	        }, _temp), _possibleConstructorReturn(_this, _ret);
@@ -21685,7 +21690,7 @@
 	        value: function render() {
 	            var _props = this.props,
 	                store = _props.store,
-	                params = _props.params;
+	                location = _props.location;
 
 	            if (!store || store.index == -1 || !store.labels) {
 	                return _react2.default.createElement(
@@ -21694,6 +21699,8 @@
 	                    'Loading...'
 	                );
 	            }
+
+	            var userId = this.getUserId(location.query);
 
 	            var dataTable = _react2.default.createElement(
 	                'div',
@@ -21710,10 +21717,10 @@
 	                    _react2.default.createElement(
 	                        'div',
 	                        { className: 'annotator-left' },
-	                        _react2.default.createElement(UserSummary, { userId: params.userId, completed: store.completed }),
+	                        _react2.default.createElement(UserSummary, { userId: userId, completed: store.completed }),
 	                        _react2.default.createElement('p', null),
 	                        _react2.default.createElement(_LabelChoices2.default, {
-	                            userId: params.userId,
+	                            userId: userId,
 	                            labels: store.labels,
 	                            recordId: store.index,
 	                            submitLabel: store.submitLabel

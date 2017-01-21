@@ -10,7 +10,7 @@ class App extends React.Component {
     return <div>
         <Provider store={store}>
             <Router history={hashHistory}>
-                <Route path="/label/:userId" component={DataAnnotator} />
+                <Route path="/label" component={DataAnnotator} />
             </Router>
         </Provider>
     </div>
