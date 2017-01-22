@@ -48,6 +48,7 @@ class Project(object):
     def get_summary(self):
         counts = Label.label_counts(self.session)
         labelset_counts = Label.labelset_counts(self.session)
+        user_counts = Label.user_counts(self.session)
 
         counts_with_names = []
         labelset_counts_with_names = []
@@ -76,7 +77,8 @@ class Project(object):
         return {
                 'counts': counts_with_names,
                 'labelset_counts': labelset_counts_with_names,
-                'total': Label.total(self.session)
+                'total': Label.total(self.session),
+                'user_counts': user_counts
                 }
 
 

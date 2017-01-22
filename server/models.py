@@ -41,7 +41,11 @@ class Label(Base):
                 func.sum(inner_table.columns.count)
                 ).group_by('labelset').all()
 
-
     @classmethod
     def total(cls, session):
         return session.query(func.count(cls.id)).scalar()
+
+    @classmethod
+    def user_counts(cls, session):
+        return session.query(cls.labeler, func.count(cls.id)).group_by(cls.labeler).all()
+

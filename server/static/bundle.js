@@ -26391,6 +26391,59 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	var countTable = function countTable(data) {
+	    var nullMessage = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'Skipped';
+
+	    var i = 0;
+	    var rows = [];
+	    var _iteratorNormalCompletion = true;
+	    var _didIteratorError = false;
+	    var _iteratorError = undefined;
+
+	    try {
+	        for (var _iterator = data[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	            var row = _step.value;
+
+	            var label = row[0] === null ? nullMessage : row[0];
+	            var count = row[1];
+	            rows.push(_react2.default.createElement(
+	                'div',
+	                { key: i, className: 'summary-row' },
+	                _react2.default.createElement(
+	                    'span',
+	                    { className: 'summary-cell' },
+	                    label
+	                ),
+	                _react2.default.createElement(
+	                    'span',
+	                    { className: 'summary-cell' },
+	                    ': ',
+	                    count
+	                )
+	            ));
+
+	            i += 1;
+	        }
+	    } catch (err) {
+	        _didIteratorError = true;
+	        _iteratorError = err;
+	    } finally {
+	        try {
+	            if (!_iteratorNormalCompletion && _iterator.return) {
+	                _iterator.return();
+	            }
+	        } finally {
+	            if (_didIteratorError) {
+	                throw _iteratorError;
+	            }
+	        }
+	    }
+
+	    ;
+
+	    return rows;
+	};
+
 	var Summary = (_dec = (0, _mobxReact.inject)('store'), _dec(_class = (0, _mobxReact.observer)(_class = function (_React$Component) {
 	    _inherits(Summary, _React$Component);
 
@@ -26421,100 +26474,9 @@
 	                );
 	            }
 
-	            var i = 0;
-	            var label_count_rows = [];
-	            var _iteratorNormalCompletion = true;
-	            var _didIteratorError = false;
-	            var _iteratorError = undefined;
-
-	            try {
-	                for (var _iterator = store.summary.counts[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	                    var row = _step.value;
-
-	                    var label = row[0] === null ? 'Skipped' : row[0];
-	                    var count = row[1];
-	                    label_count_rows.push(_react2.default.createElement(
-	                        'div',
-	                        { key: i, className: 'summary-row' },
-	                        _react2.default.createElement(
-	                            'span',
-	                            { className: 'summary-cell' },
-	                            label
-	                        ),
-	                        ' ',
-	                        _react2.default.createElement(
-	                            'span',
-	                            { className: 'summary-cell' },
-	                            ': ',
-	                            count
-	                        )
-	                    ));
-
-	                    i += 1;
-	                }
-	            } catch (err) {
-	                _didIteratorError = true;
-	                _iteratorError = err;
-	            } finally {
-	                try {
-	                    if (!_iteratorNormalCompletion && _iterator.return) {
-	                        _iterator.return();
-	                    }
-	                } finally {
-	                    if (_didIteratorError) {
-	                        throw _iteratorError;
-	                    }
-	                }
-	            }
-
-	            ;
-
-	            var labelset_count_rows = [];
-	            var _iteratorNormalCompletion2 = true;
-	            var _didIteratorError2 = false;
-	            var _iteratorError2 = undefined;
-
-	            try {
-	                for (var _iterator2 = store.summary.labelset_counts[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-	                    var _row = _step2.value;
-
-	                    var labelset = _row[0] === null ? 'Skipped' : _row[0];
-	                    var _count = _row[1];
-	                    labelset_count_rows.push(_react2.default.createElement(
-	                        'div',
-	                        { key: i, className: 'summary-row' },
-	                        _react2.default.createElement(
-	                            'span',
-	                            { className: 'summary-cell' },
-	                            labelset
-	                        ),
-	                        ' ',
-	                        _react2.default.createElement(
-	                            'span',
-	                            { className: 'summary-cell' },
-	                            ': ',
-	                            _count
-	                        )
-	                    ));
-
-	                    i += 1;
-	                }
-	            } catch (err) {
-	                _didIteratorError2 = true;
-	                _iteratorError2 = err;
-	            } finally {
-	                try {
-	                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
-	                        _iterator2.return();
-	                    }
-	                } finally {
-	                    if (_didIteratorError2) {
-	                        throw _iteratorError2;
-	                    }
-	                }
-	            }
-
-	            ;
+	            var labelset_count_rows = countTable(store.summary.labelset_counts);
+	            var count_rows = countTable(store.summary.counts);
+	            var user_count_rows = countTable(store.summary.user_counts, 'None');
 
 	            return _react2.default.createElement(
 	                'div',
@@ -26533,7 +26495,7 @@
 	                        { className: 'summary-heading' },
 	                        'Label counts (individual)'
 	                    ),
-	                    label_count_rows
+	                    count_rows
 	                ),
 	                _react2.default.createElement(
 	                    'div',
@@ -26543,8 +26505,17 @@
 	                        { className: 'summary-heading' },
 	                        'Label counts (grouped)'
 	                    ),
-	                    labelset_count_rows,
-	                    ' '
+	                    labelset_count_rows
+	                ),
+	                _react2.default.createElement(
+	                    'div',
+	                    { className: 'user-count-layout summary-table' },
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'summary-heading' },
+	                        'User activity'
+	                    ),
+	                    user_count_rows
 	                )
 	            );
 	        }
@@ -31695,7 +31666,7 @@
 
 
 	// module
-	exports.push([module.id, ".summary-layout {\n  margin-left: 10px; }\n  .summary-layout .total-count {\n    margin-bottom: 32px;\n    font-size: 24px; }\n  .summary-layout .label-count-layout {\n    margin-bottom: 32px; }\n\n.summary-table {\n  display: table; }\n  .summary-table .summary-row {\n    display: table-row; }\n    .summary-table .summary-row .summary-cell {\n      display: table-cell;\n      border-bottom: 1px solid #000; }\n  .summary-table .summary-heading {\n    font-size: 24px; }\n", ""]);
+	exports.push([module.id, ".summary-layout {\n  margin-left: 10px; }\n  .summary-layout .total-count {\n    margin-bottom: 32px;\n    font-size: 24px; }\n  .summary-layout .label-count-layout {\n    margin-bottom: 32px; }\n  .summary-layout .labelset-count-layout {\n    margin-bottom: 32px; }\n\n.summary-table {\n  display: table; }\n  .summary-table .summary-row {\n    display: table-row; }\n    .summary-table .summary-row .summary-cell {\n      display: table-cell;\n      border-bottom: 1px solid #000; }\n  .summary-table .summary-heading {\n    font-size: 24px; }\n", ""]);
 
 	// exports
 
