@@ -59,7 +59,10 @@ class Project(object):
             if label_ix is None:
                 name = 'Skipped'
             else:
-                name = self.data.columns[label_ix + 1]
+                try:
+                    name = self.labels[label_ix]['text']
+                except IndexError:
+                    name = 'Out of range: {}'.format(label_ix)
 
             counts_with_names.append((name, count))
 
@@ -70,7 +73,11 @@ class Project(object):
                 name = 'Skipped'
             else:
                 label_ix = [int(x) for x in row[0].split(',')]
-                name = ','.join([self.data.columns[ix + 1] for ix in label_ix])
+
+                try:
+                    name = ','.join([self.labels[ix]['text'] for ix in label_ix])
+                except IndexError:
+                    name = 'Out of range: {}'.format(label_ix)
 
             labelset_counts_with_names.append((name, count))
 
