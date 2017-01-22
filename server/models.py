@@ -46,6 +46,10 @@ class Label(Base):
         return session.query(func.count(cls.id)).scalar()
 
     @classmethod
+    def total_docs(cls, session):
+        return session.query(func.count(func.distinct(cls.document_id))).scalar()
+
+    @classmethod
     def user_counts(cls, session):
-        return session.query(cls.labeler, func.count(cls.id)).group_by(cls.labeler).all()
+        return session.query(cls.labeler, func.count(func.distinct(cls.document_id))).group_by(cls.labeler).all()
 

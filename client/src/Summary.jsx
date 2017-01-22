@@ -42,6 +42,7 @@ class Summary extends React.Component {
 
         return <div className="summary-layout">
             <div className="total-count">Total Labels: {store.summary.total}</div>
+            <div className="total-count">Total Documents: {store.summary.total_docs}</div>
             <div className="label-count-layout summary-table"> 
                 <div className="summary-heading">Label counts (individual)</div>
                 {count_rows} 

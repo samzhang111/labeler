@@ -26489,6 +26489,12 @@
 	                ),
 	                _react2.default.createElement(
 	                    'div',
+	                    { className: 'total-count' },
+	                    'Total Documents: ',
+	                    store.summary.total_docs
+	                ),
+	                _react2.default.createElement(
+	                    'div',
 	                    { className: 'label-count-layout summary-table' },
 	                    _react2.default.createElement(
 	                        'div',

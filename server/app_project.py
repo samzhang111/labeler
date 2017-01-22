@@ -1,7 +1,9 @@
 import config
 from server.db import session
 from server.app_redis import redis
-from server.project import SqlalchemyData, PandasData, Project
+from server.project import Project
+from server.data_sources import SqlalchemyData, PandasData
+
 import pandas as pd
 
 if config.data_type == 'csv':
