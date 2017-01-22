@@ -41,6 +41,10 @@ def get_user(user):
 
     return jsonify({'completed': completed})
 
+@app.route('/summary')
+def summary():
+    return jsonify(project.get_summary())
+
 @app.route('/')
 def index():
     return render_template('index.html')

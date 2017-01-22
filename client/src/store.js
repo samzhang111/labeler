@@ -6,6 +6,7 @@ class Store {
     @observable record = {};
     @observable labels = [];
     @observable completed = 0;
+    @observable summary = [];
 
     submitLabel = (recordId, userId, labels) => {
         dispatcher.dispatch({
@@ -63,6 +64,13 @@ dispatcher.register((action) => {
                         store.record = data;
                     });
                 });
+            });
+        });
+    }
+    if (action.type == 'FETCH_SUMMARY') {
+        fetch('/summary').then((response) => {
+            response.json().then((json) => {
+                store.summary = json;
             });
         });
     }

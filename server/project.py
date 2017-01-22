@@ -2,6 +2,7 @@ import pandas as pd
 from server.models import Label
 from server.app_redis import unlabeled
 import json
+from sqlalchemy import func
 
 
 class Project(object):
@@ -42,8 +43,41 @@ class Project(object):
         return self.data.get_unlabeled_set(self.labeled_indexes, n)
 
     def get_completed(self, user):
-        return self.session.query(Label.labeler).group_by(Label.document_id)\
-                .having(Label.labeler == user).count()
+        return Label.get_completed(self,session, user)
+
+    def get_summary(self):
+        counts = Label.label_counts(self.session)
+        labelset_counts = Label.labelset_counts(self.session)
+
+        counts_with_names = []
+        labelset_counts_with_names = []
+
+        for row in counts:
+            label_ix = row[0]
+            count = row[1]
+            if label_ix is None:
+                name = 'Skipped'
+            else:
+                name = self.data.columns[label_ix + 1]
+
+            counts_with_names.append((name, count))
+
+        for row in labelset_counts:
+            count = row[1]
+
+            if row[0] is None:
+                name = 'Skipped'
+            else:
+                label_ix = [int(x) for x in row[0].split(',')]
+                name = ','.join([self.data.columns[ix + 1] for ix in label_ix])
+
+            labelset_counts_with_names.append((name, count))
+
+        return {
+                'counts': counts_with_names,
+                'labelset_counts': labelset_counts_with_names,
+                'total': Label.total(self.session)
+                }
 
 
 class PandasData(object):

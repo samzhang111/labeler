@@ -1,0 +1,34 @@
+$summary_header_size: 24px;
+$summary_margin: 32px;
+
+.summary-layout {
+    margin-left: 10px;
+
+    .total-count {
+        margin-bottom: $summary_margin;
+        font-size: $summary_header_size;
+    }
+
+    .label-count-layout {
+        margin-bottom: $summary_margin;
+    }
+
+    .labelset-count-layout {
+    }
+}
+
+.summary-table {
+    display: table;
+    .summary-row {
+        display: table-row;
+
+        .summary-cell {
+            display: table-cell;
+            border-bottom: 1px solid #000;
+        }
+    }
+
+    .summary-heading {
+        font-size: $summary_header_size;
+    }
+}
