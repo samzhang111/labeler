@@ -112,7 +112,7 @@
 	                    { store: _store2.default },
 	                    _react2.default.createElement(
 	                        _reactRouter.Router,
-	                        { history: _reactRouter.hashHistory },
+	                        { history: _reactRouter.browserHistory },
 	                        _react2.default.createElement(_reactRouter.Route, { path: '/summary', component: _Summary2.default }),
 	                        _react2.default.createElement(_reactRouter.Route, { path: '/label', component: _DataAnnotator2.default })
 	                    )
@@ -21612,11 +21612,13 @@
 	            args[_key] = arguments[_key];
 	        }
 
-	        return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref2 = DataAnnotator.__proto__ || Object.getPrototypeOf(DataAnnotator)).call.apply(_ref2, [this].concat(args))), _this), _this.getUserId = function (query) {
+	        return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref2 = DataAnnotator.__proto__ || Object.getPrototypeOf(DataAnnotator)).call.apply(_ref2, [this].concat(args))), _this), _this.getUserId = function () {
+	            var query = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _this.props.location.query;
+
 	            return query.workerId || 'none';
 	        }, _this.componentWillReceiveProps = function (nextProps) {
 	            var newUserId = _this.getUserId(nextProps.location.query);
-	            var oldUserId = _this.getUserId(_this.props.location.query);
+	            var oldUserId = _this.getUserId();
 	            console.log(newUserId, oldUserId);
 	            if (newUserId != oldUserId) {
 	                _dispatcher2.default.dispatch({
@@ -21638,7 +21640,7 @@
 	            });
 	            _dispatcher2.default.dispatch({
 	                type: 'FETCH_USER',
-	                user: this.props.params.userId
+	                user: this.getUserId()
 	            });
 	        }
 	    }, {
@@ -21693,9 +21695,7 @@
 	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var _props = this.props,
-	                store = _props.store,
-	                location = _props.location;
+	            var store = this.props.store;
 
 	            if (!store || store.index == -1 || !store.labels) {
 	                return _react2.default.createElement(
@@ -21705,7 +21705,7 @@
 	                );
 	            }
 
-	            var userId = this.getUserId(location.query);
+	            var userId = this.getUserId();
 
 	            var dataTable = _react2.default.createElement(
 	                'div',
@@ -26613,7 +26613,7 @@
 	        _dispatcher2.default.dispatch({
 	            type: 'LABEL_IN_PROGRESS'
 	        });
-	        fetch('/data/' + recordId + '/label', {
+	        fetch('/api/data/' + recordId + '/label', {
 	            method: "POST",
 	            body: JSON.stringify({ labels: labels, userId: userId })
 	        }).then(function (response) {
@@ -26664,14 +26664,14 @@
 
 	_dispatcher2.default.register(function (action) {
 	    if (action.type == 'FETCH_LABELS') {
-	        fetch('/labels').then(function (response) {
+	        fetch('/api/labels').then(function (response) {
 	            response.json().then(function (json) {
 	                store.labels = json.labels;
 	            });
 	        });
 	    }
 	    if (action.type == 'FETCH_USER') {
-	        fetch('/user/' + action.user).then(function (response) {
+	        fetch('/api/user/' + action.user).then(function (response) {
 	            response.json().then(function (json) {
 	                store.completed = json.completed;
 	            });
@@ -26681,9 +26681,9 @@
 	        store.index = null;
 	        store.record = {};
 
-	        fetch('/unlabeled').then(function (response) {
+	        fetch('/api/unlabeled').then(function (response) {
 	            response.json().then(function (json) {
-	                fetch('/data/' + json.index).then(function (dataResponse) {
+	                fetch('/api/data/' + json.index).then(function (dataResponse) {
 	                    dataResponse.json().then(function (data) {
 	                        store.index = json.index;
 	                        store.record = data;
@@ -26693,7 +26693,7 @@
 	        });
 	    }
 	    if (action.type == 'FETCH_SUMMARY') {
-	        fetch('/summary').then(function (response) {
+	        fetch('/api/summary').then(function (response) {
 	            response.json().then(function (json) {
 	                store.summary = json;
 	            });

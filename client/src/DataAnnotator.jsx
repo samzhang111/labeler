@@ -21,17 +21,17 @@ class DataAnnotator extends React.Component {
         });
         dispatcher.dispatch({
             type: 'FETCH_USER',
-            user: this.props.params.userId
+            user: this.getUserId()
         });
     };
 
-    getUserId = (query) => {
+    getUserId = (query=this.props.location.query) => {
         return query.workerId || 'none';
     }
 
     componentWillReceiveProps = (nextProps) => {
         const newUserId = this.getUserId(nextProps.location.query);
-        const oldUserId = this.getUserId(this.props.location.query);
+        const oldUserId = this.getUserId();
         console.log(newUserId, oldUserId);
         if (newUserId != oldUserId) {
             dispatcher.dispatch({
@@ -55,12 +55,12 @@ class DataAnnotator extends React.Component {
     };
 
     render() {
-        const {store, location} = this.props;
+        const {store} = this.props;
         if (!store || store.index == -1 || !store.labels) {
             return <div>Loading...</div>
         }
 
-        const userId = this.getUserId(location.query);
+        const userId = this.getUserId();
 
         let dataTable = <div className="data-table">
             {this.getDataRows(store.record)}

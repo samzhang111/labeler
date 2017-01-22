@@ -1,51 +1,15 @@
-from flask import Flask, request, jsonify, render_template
-from server.app_project import project
+from flask import Flask, render_template
 
-app = Flask(__name__)
-
-from functools import wraps
-from flask import request, Response
-import os
-
+from server.routes import api
 from server.db import init_db
+
 init_db()
 
+app = Flask(__name__)
+app.register_blueprint(api, url_prefix='/api')
 
-@app.route('/labels')
-def get_labels():
-    return(jsonify({
-        'labels': project.labels,
-        'columns': project.data_columns
-        }))
-
-@app.route('/unlabeled')
-def get_unlabeled():
-    ix = project.get_unlabeled_datum_index()
-    return jsonify({'index': ix})
-
-@app.route('/data/<int:index>')
-def get_datum(index):
-    return jsonify(project.datum(index))
-
-@app.route('/data/<int:post_id>/label', methods=['POST'])
-def post_label(post_id):
-    data = request.get_json(force=True)
-    project.assign_labels(post_id, data['labels'], data['userId'],
-            request.remote_addr)
-
-    return jsonify({'index': post_id})
-
-@app.route('/user/<string:user>')
-def get_user(user):
-    completed = project.get_completed(user)
-
-    return jsonify({'completed': completed})
-
-@app.route('/summary')
-def summary():
-    return jsonify(project.get_summary())
-
+@app.route('/<page>')
 @app.route('/')
-def index():
+def index(page=None):
     return render_template('index.html')
 

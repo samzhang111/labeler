@@ -43,7 +43,7 @@ class Project(object):
         return self.data.get_unlabeled_set(self.labeled_indexes, n)
 
     def get_completed(self, user):
-        return Label.get_completed(self,session, user)
+        return Label.get_completed(self.session, user)
 
     def get_summary(self):
         counts = Label.label_counts(self.session)

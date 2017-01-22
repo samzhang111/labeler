@@ -12,7 +12,7 @@ class Store {
         dispatcher.dispatch({
             type: 'LABEL_IN_PROGRESS'
         });
-        fetch(`/data/${recordId}/label`, {
+        fetch(`/api/data/${recordId}/label`, {
             method: "POST",
             body: JSON.stringify({labels, userId})
         }).then(response => {
@@ -38,14 +38,14 @@ const store = new Store();
 
 dispatcher.register((action) => {
     if (action.type == 'FETCH_LABELS') {
-        fetch('/labels').then((response) => {
+        fetch('/api/labels').then((response) => {
             response.json().then((json) => {
                 store.labels = json.labels;
             });
         });
     }
     if (action.type == 'FETCH_USER') {
-        fetch(`/user/${action.user}`).then((response) => {
+        fetch(`/api/user/${action.user}`).then((response) => {
             response.json().then((json) => {
                 store.completed = json.completed;
             });
@@ -56,9 +56,9 @@ dispatcher.register((action) => {
         store.index = null;
         store.record = {};
 
-        fetch('/unlabeled').then((response) => {
+        fetch('/api/unlabeled').then((response) => {
             response.json().then((json) => {
-                fetch(`/data/${json.index}`).then((dataResponse) => {
+                fetch(`/api/data/${json.index}`).then((dataResponse) => {
                     dataResponse.json().then((data) => {
                         store.index = json.index;
                         store.record = data;
@@ -68,7 +68,7 @@ dispatcher.register((action) => {
         });
     }
     if (action.type == 'FETCH_SUMMARY') {
-        fetch('/summary').then((response) => {
+        fetch('/api/summary').then((response) => {
             response.json().then((json) => {
                 store.summary = json;
             });

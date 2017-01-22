@@ -18,5 +18,10 @@ def run():
     app.run()
     click.echo('Done')
 
+@cli.command()
+def list_routes():
+    from pprint import pprint
+    pprint(app.url_map)
+
 if __name__ == '__main__':
     cli()
